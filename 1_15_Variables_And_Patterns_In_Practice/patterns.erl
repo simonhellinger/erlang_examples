@@ -1,6 +1,6 @@
 -module(patterns).
 -include_lib("eunit/include/eunit.hrl").
--export([x_orl1/2, x_orl2/2, x_or1/2, x_or2/2, x_or3/2, maxThree/3]).
+-export([x_orl1/2, x_orl2/2, x_or1/2, x_or2/2, x_or3/2, maxThree/3, howManyEqual/3]).
 
 % provided in the lesson
 x_orl1(true, false) ->
@@ -34,6 +34,18 @@ maxThree(X, X, X)->
     X;
 maxThree(X, Y, Z)->
     max(max(X, Y), Z).
+
+% how many equal
+howManyEqual(X, X, X) -> 
+    3;
+howManyEqual(X, X, _) -> 
+    2;
+howManyEqual(X, _, X) -> 
+    2;
+howManyEqual(_, Y, Y) -> 
+    2;
+howManyEqual(_, _, _) -> 
+    0.
 
 % tests
 x_orl1_test() ->
@@ -73,3 +85,10 @@ maxThree_test() ->
     ?assertEqual(0, maxThree(0,0,0)),
     ?assertEqual(1, maxThree(1,1,1)),
     ?assertEqual(1, maxThree(1,1,0)).
+
+howManyEqual_test() ->
+    ?assertEqual(0, howManyEqual(1,2,3)),
+    ?assertEqual(2, howManyEqual(1,1,3)),
+    ?assertEqual(2, howManyEqual(1,2,2)),
+    ?assertEqual(2, howManyEqual(1,2,1)),
+    ?assertEqual(3, howManyEqual(3,3,3)).

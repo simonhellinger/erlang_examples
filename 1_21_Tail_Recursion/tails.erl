@@ -31,6 +31,37 @@ fib_test() ->
     ?assertEqual(8, fib(6)).
 
 % Perfect numbers
+% 6
+% 6 / 1 = 6
+% 6 / 2 = 3
+% 6 / 3 = 2
+% 6 / 4 = x
+% 6 / 5 = x
+% 6 / 6 = 1
+% 1 + 2 + 3 = 6
+
+perfN(N) ->
+    perfN(1, 0, N).
+
+% perfN(counter, accumulator, original_value)
+perfN(_, _, 0) ->
+    false;
+perfN(ORIG, ACC, ORIG) ->
+    ACC == ORIG;
+perfN(N, ACC, ORIG) when ORIG rem N == 0 ->
+    perfN(N + 1, ACC + N, ORIG);
+perfN(N, ACC, ORIG) when ORIG rem N /= 0 ->
+    perfN(N + 1, ACC , ORIG).
+
+
+perfN_test() ->
+    ?assertEqual(false, perfN(0)),
+    ?assertEqual(false, perfN(1)),
+    ?assertEqual(false, perfN(2)),
+    ?assertEqual(false, perfN(3)),
+    ?assertEqual(true, perfN(6)),
+    ?assertEqual(false,perfN(8)),
+    ?assertEqual(true, perfN(28)).
 
 
 % Given a function F from int to int, find the sum of the values F(0), F(1), ..., F(N-1), F(N)

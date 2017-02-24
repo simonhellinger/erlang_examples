@@ -65,4 +65,18 @@ perfN_test() ->
 
 
 % Given a function F from int to int, find the sum of the values F(0), F(1), ..., F(N-1), F(N)
+
+sumOfResults(FUNC, N) ->
+    sumOfResults(N, FUNC, 0).
+
+sumOfResults(-1, _, ACC) ->
+    ACC;
+sumOfResults(N, FUNC, ACC) ->
+    sumOfResults(N - 1, FUNC, ACC + FUNC(N)).
+
+sumOfResults_test() ->
+    ?assertEqual(0, sumOfResults(fun (X) -> X * X end, 0)),
+    ?assertEqual(1, sumOfResults(fun (X) -> X * X end, 1)),
+    ?assertEqual(91, sumOfResults(fun (X) -> X * X end, 6)).
+
 % Given a function F from int to int, find the max of the values F(0), F(1), ..., F(N-1), F(N)

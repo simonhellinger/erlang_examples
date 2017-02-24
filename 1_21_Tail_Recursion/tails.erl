@@ -5,7 +5,7 @@
 % Fibonacci numbers
 % 0, 1, 1, 2, 3, 5, 8, 13, 21
 
-
+% for a better version see teacher_tail.erl
 fib(N) ->
     fib(N, 0, 1).
 
@@ -43,14 +43,14 @@ fib_test() ->
 perfN(N) ->
     perfN(1, 0, N).
 
-% perfN(counter, accumulator, original_value)
+% perfN(counter, accumulator, original_value) -- for a better version see teacher_tail.erl
 perfN(_, _, 0) ->
     false;
 perfN(ORIG, ACC, ORIG) ->
     ACC == ORIG;
 perfN(N, ACC, ORIG) when ORIG rem N == 0 ->
     perfN(N + 1, ACC + N, ORIG);
-perfN(N, ACC, ORIG) when ORIG rem N /= 0 ->
+perfN(N, ACC, ORIG) when ORIG rem N /= 0 -> % guard unneccessary here, see teacher_tail.erl
     perfN(N + 1, ACC , ORIG).
 
 

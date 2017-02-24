@@ -1,6 +1,6 @@
 -module(tails).
 -include_lib("eunit/include/eunit.hrl").
--export([fib/1]).
+-export([fib/1, perfN/1, sumOfResults/2, maxOfResults/2]).
 
 % Fibonacci numbers
 % 0, 1, 1, 2, 3, 5, 8, 13, 21
@@ -80,3 +80,15 @@ sumOfResults_test() ->
     ?assertEqual(91, sumOfResults(fun (X) -> X * X end, 6)).
 
 % Given a function F from int to int, find the max of the values F(0), F(1), ..., F(N-1), F(N)
+maxOfResults(FUNC, N) ->
+    maxOfResults(N, FUNC, 0).
+
+maxOfResults(-1, _, ACC) ->
+    ACC;
+maxOfResults(N, FUNC, ACC) ->
+    maxOfResults(N - 1, FUNC, max(ACC, FUNC(N))).
+
+maxOfResults_test() ->
+    ?assertEqual(0, maxOfResults(fun (X) -> X * X end, 0)),
+    ?assertEqual(1, maxOfResults(fun (X) -> X * X end, 1)),
+    ?assertEqual(36, maxOfResults(fun (X) -> X * X end, 6)).

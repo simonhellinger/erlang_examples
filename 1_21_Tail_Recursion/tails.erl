@@ -81,7 +81,7 @@ sumOfResults_test() ->
 
 % Given a function F from int to int, find the max of the values F(0), F(1), ..., F(N-1), F(N)
 maxOfResults(FUNC, N) ->
-    maxOfResults(N, FUNC, 0).
+    maxOfResults(N, FUNC, FUNC(N)).
 
 maxOfResults(-1, _, ACC) ->
     ACC;
@@ -91,4 +91,5 @@ maxOfResults(N, FUNC, ACC) ->
 maxOfResults_test() ->
     ?assertEqual(0, maxOfResults(fun (X) -> X * X end, 0)),
     ?assertEqual(1, maxOfResults(fun (X) -> X * X end, 1)),
-    ?assertEqual(36, maxOfResults(fun (X) -> X * X end, 6)).
+    ?assertEqual(36, maxOfResults(fun (X) -> X * X end, 6)),
+    ?assertEqual(-90, maxOfResults(fun (X) -> X - 100 end, 10)).

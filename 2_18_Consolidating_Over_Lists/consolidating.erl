@@ -28,6 +28,7 @@ reverse([X | Xs], Acc) ->
 join_test() ->
     ?assertEqual([], join([], [])),
     ?assertEqual("a", join([], "a")),
+    ?assertEqual([1], join([1], [])),
     ?assertEqual("ab", join("a", "b")),
     ?assertEqual("Hello World", join("Hello", " World")).
 
@@ -63,7 +64,56 @@ member_test() ->
     ?assertEqual(true, member(2, [1, 3, 4, 2, 6])),
     ?assertEqual(true, member([3, 4], [1, 2, [3, 4], 5])).
 
+%% Merge sort
+%% The actual sorting happens in merge.
+merge_sort([]) ->
+    [];
+merge_sort([N]) ->
+    [N];
+merge_sort(L) ->
+    [Left, Right] = split(L),
+    merge(merge_sort(Left), merge_sort(Right)).
 
+% merges a list piece by piece, ordering it on the way
+merge(A, []) ->
+    A;
+merge([], B) ->
+    B;
+merge([A|As] = LA, [B|Bs] = LB) ->
+    case A < B of
+        true ->
+            [A | merge(As, LB)];
+        false ->
+            [B | merge(LA, Bs)]
+    end.
+
+% Returns the length of a list
+len(L) ->
+    len(L, 0).
+
+len([], Acc) ->
+    Acc;
+len([_X | Xs], Acc) ->
+    len(Xs, Acc + 1).
+
+% Splits a list roughly in half
+split(L) ->
+    split(reverse(L), [], len(L) div 2).
+
+split([], R, _) ->
+    R;
+split(L, R, 0) ->
+    [L, R];
+split([L|Ls], Right, Elems) ->
+    split(Ls, [L|Right], Elems - 1).
+
+merge_sort_test() ->
+    ?assertEqual([], merge_sort([])),
+    ?assertEqual([1], merge_sort([1])),
+    ?assertEqual([1, 2], merge_sort([2, 1])),
+    ?assertEqual([1, 2, 3, 4, 5, 6, 7, 70, 900], merge_sort([900, 1, 70, 4, 2, 3, 5, 6, 7])).
+
+%% Insertion sort
 insertion_sort([]) ->
     [];
 insertion_sort([X|Xs]) ->

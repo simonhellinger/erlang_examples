@@ -1,7 +1,7 @@
 -module(consolidating).
 -include_lib("eunit/include/eunit.hrl").
 
--export([join/2, concat/1, merge_sort/1, quick_sort/1, insertion_sort/1]).
+-export([join/2, concat/1, merge_sort/1, quick_sort/1, insertion_sort/1, permutations/1]).
 
 %%
 %% joins two lists (and, thus, strings) together.
@@ -33,6 +33,17 @@ join_test() ->
     ?assertEqual([1], join([1], [])),
     ?assertEqual("ab", join("a", "b")),
     ?assertEqual("Hello World", join("Hello", " World")).
+
+%% Deletes first element from list (like lists:delete)
+delete_first(_, []) ->
+    [];
+delete_first(X, [Y|Ys]) ->
+    case X of
+        Y ->
+            Ys;
+        _ ->
+            [Y | delete_first(X, Ys)]
+    end.
 
 %%
 %% Concatenation of "unlimited"" lists into one list.
@@ -199,3 +210,31 @@ regular_list_test() ->
     ?assertEqual(Exp, merge_sort(Act)),
     ?assertEqual(Exp, quick_sort(Act)),
     ?assertEqual(Exp, insertion_sort(Act)).
+
+%%
+%% permutaion recursion.  (This was cobbled together from other solutions found)
+%%
+permutations([]) -> 
+  [[]];
+permutations([_X|_Xs]=Xs) ->
+  generate_node(Xs, Xs, [], []).
+
+generate_node([], [], Path, Result) -> % Leaf
+    case member(Path, Result) of
+        true -> 
+            Result;
+        false -> 
+            [Path | Result]
+    end;
+generate_node([], _List, _Path, Result) -> % node
+    Result;
+generate_node([X | Xs], List, Path, Result) ->
+    RestOfXs = delete_first(X, List),
+    NewResult = generate_node(RestOfXs, RestOfXs, [X|Path], Result),
+    generate_node(Xs, List, Path, NewResult).
+
+permutations_test() ->
+    ?assertEqual([[]], permutations([])),
+    ?assertEqual([[1]], permutations([1])),
+    ?assertEqual([[1,2], [2, 1]], permutations([1,2])),
+    ?assertEqual([[1,2,3], [2,1,3], [1,3,2], [3,1,2], [2,3,1], [3,2,1]], permutations([1, 2, 3])).

@@ -1,6 +1,6 @@
 -module(rps).
 -include_lib("eunit/include/eunit.hrl").
--export([play/1,echo/1,play_two/3,rock/1,no_repeat/1,const/1,enum/1,cycle/1,rand/1,beat_least_frequent/1,beat_most_frequent/1,random_strategy/1,val/1,tournament/2]).
+-export([play/1,echo/1,play_two/3,rock/1,no_repeat/1,enum/1,const/1,cycle/1,rand/1,beat_least_frequent/1,beat_most_frequent/1,random_strategy/1,val/1,tournament/2]).
 
 
 %
@@ -17,10 +17,14 @@ play_two(StrategyL,StrategyR,N) ->
 % REPLACE THE dummy DEFINITIONS
 
 play_two(_,_,PlaysL,PlaysR,0) ->
-   dummy;
+   tournament(PlaysL, PlaysR);
 
 play_two(StrategyL,StrategyR,PlaysL,PlaysR,N) ->
-   dummy.
+    PlayL = StrategyL(PlaysR),
+    PlayR = StrategyR(PlaysL),
+    io:format("Result: ~p~n", [result(PlayL, PlayR)]),
+    play_two(StrategyL, StrategyR, [PlayL | PlaysL], [PlayR |PlaysR], N-1).
+   
 
 %
 % interactively play against a strategy, provided as argument.
@@ -30,20 +34,22 @@ play(Strategy) ->
     io:format("Rock - paper - scissors~n"),
     io:format("Play one of rock, paper, scissors, ...~n"),
     io:format("... r, p, s, stop, followed by '.'~n"),
-    play(Strategy,[]).
+    play(Strategy, [], []).
 
 % tail recursive loop for play/1
 
-play(Strategy,Moves) ->
+play(Strategy, MovesL, MovesR) ->
     {ok,P} = io:read("Play: "),
-    Play = expand(P),
-    case Play of
+    PlayL = expand(P),
+    case PlayL of
 	stop ->
-	    io:format("Stopped~n");
+	    io:format("Stopped~n"),
+        tournament(MovesL, MovesR);
 	_    ->
-	    Result = result(Play,Strategy(Moves)),
+        PlayR = Strategy(MovesL),
+	    Result = result(PlayL,PlayR),
 	    io:format("Result: ~p~n",[Result]),
-	    play(Strategy,[Play|Moves])
+	    play(Strategy,[PlayL | MovesL], [PlayR | MovesR])
     end.
 
 %
@@ -136,9 +142,6 @@ no_repeat([]) ->
 no_repeat([X|_]) -> % opponent does not repeat
     beats(X).       % take the one she would've beat now, so she won't beat it next time
 
-const(Play) ->
-    dummy.
-
 cycle(Xs) ->
     enum(length(Xs) rem 3).
 
@@ -146,6 +149,10 @@ cycle(Xs) ->
 
 rand(_) ->
     enum(rand:uniform(3) - 1).
+
+% const(rock) returns a function that acts like the function rock/1
+const(Play) ->
+    fun (_) -> Play end.
 
 % Uses the element played most by the opponent, assuming
 % it will play it more than the others.
@@ -185,9 +192,15 @@ bin(scissors, {R, P, S}) ->
     {R, P, S + 1}.
 
 
-random_strategy(Strategies) ->
+% select a random strategy out of the strategies each play
+
+random_strategy(Plays) ->
+    Strategies = [fun rps:beat_least_frequent/1, fun rps:beat_most_frequent/1, fun rps:rand/1, fun rps:cycle/1, fun rps:no_repeat/1],
     N = rand:uniform(length(Strategies)),
-    lists:nth(N, Strategies).
+    Strategy = lists:nth(N, Strategies),
+    Strategy(Plays).
+
+% Still to do: Define a strategy that takes a list of strategies and each play chooses from the list the strategy which gets the best result when played against the list of plays made so far.
 
 % Strategy tests
 
